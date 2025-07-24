@@ -1,4 +1,13 @@
 {
+  "type": "module",
+  "name": "backend",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "prod": "pm2 src/app.js"
+  },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "express": "^5.1.0",
