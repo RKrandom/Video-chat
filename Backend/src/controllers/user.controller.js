@@ -1,7 +1,37 @@
 import httpStatus from 'http-status';
 import {user} from '../models/user.model.js';
+import bcrypt from 'bcrypt';
 
-    
+const login = async (req, res) => {
+    const {username, password} = req.body; //Gets data from the frontend form
+
+    if (!username || !password) {
+        return res.status(400).json({message: 'Username and password are required'});
+    }
+
+    try {
+        const foundUser = await user.findOne({ username });
+        if(!foundUser) {
+            return res.status(httpStatus.NOT_FOUND).json({message: 'User not found'});
+        }
+
+        if(bcrypt.compare(password, foundUser.password)) {
+            let token = crypto.randomBytes(20).toString('hex'); //Generate a token
+            foundUser.token = token; //Assign the token to the user
+            await foundUser.save(); //Save the user with the new token
+            return res.status(httpStatus.OK).json({token: token}); //Send the token back to the client
+        } else {
+            return res.status(httpStatus.UNAUTHORIZED).json({message: 'Invalid password'});
+        }
+    }
+    catch (e)
+    {
+        return res.status(500).json({message: `something went wrong: ${e.message}`});
+    }    
+};
+
+
+
 const register = async (req, res) => {
     const {name, username, password} = req.body;  //Gets data from the frontend form
 
@@ -25,3 +55,5 @@ const register = async (req, res) => {
         res.json({message: `something went wrong: ${error.message}`});
     }
 };
+
+export default { login, register };

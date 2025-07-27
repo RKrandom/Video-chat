@@ -1,5 +1,4 @@
 import {Router} from "express";  // Importing Router from Express
-
 const Router = Router();  // Creating a new Router instance
 
 router.route("/login")
