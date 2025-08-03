@@ -16,6 +16,8 @@ app.use(cors());  // Use CORS middleware to allow cross-origin requests. So as w
 app.use(express.json({limit: "40kb"}))
 app.use(express.urlencoded({extended: true,  limit: "40kb"}));  // Parse incoming requests with JSON and URL-encoded payloads
 
+app.use("/api/v1/users", userRoutes);
+
 
 const start = async () => {  // Function to start the server and connect to MongoDB
   const connectionDB = await mongoose.connect("mongodb+srv://rkjsr2005:EgnDi0JfJhOAGlB0@cluster0.yebyv7r.mongodb.net/", {});  // Connect to MongoDB

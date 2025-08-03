@@ -1,6 +1,7 @@
 import httpStatus from 'http-status';
-import {user} from '../models/user.model.js';
+import { User } from '../module/user.module.js';
 import bcrypt from 'bcrypt';
+import crypto from 'crypto'; // Importing crypto for token generation
 
 const login = async (req, res) => {
     const {username, password} = req.body; //Gets data from the frontend form
@@ -10,11 +11,12 @@ const login = async (req, res) => {
     }
 
     try {
-        const foundUser = await user.findOne({ username });
+        const foundUser = await User.findOne({ username });
         if(!foundUser) {
             return res.status(httpStatus.NOT_FOUND).json({message: 'User not found'});
         }
 
+        const isPasswordValid = await bcrypt.compare(password, foundUser.password); // Compare the provided password with the hashed password in the database
         if(bcrypt.compare(password, foundUser.password)) {
             let token = crypto.randomBytes(20).toString('hex'); //Generate a token
             foundUser.token = token; //Assign the token to the user
@@ -36,14 +38,14 @@ const register = async (req, res) => {
     const {name, username, password} = req.body;  //Gets data from the frontend form
 
     try {
-        const existingUser = await user.findOne({ username }); //Checks if username already exists in database
+        const existingUser = await User.findOne({ username }); //Checks if username already exists in database
         
         if (existingUser) {
            return res.status(httpStatus.FOUND).json({ message: 'Username already exists' });
 
            const hashedPassword = await bcrypt.hash(password, 10); //hashin the pass. through bcrypt
 
-           const newuser = new user({
+           const newuser = new User({
                 name: name,
                 username: username,
                 password: hashedPassword
@@ -56,4 +58,4 @@ const register = async (req, res) => {
     }
 };
 
-export default { login, register };
+export { login, register };
